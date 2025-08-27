@@ -5,7 +5,7 @@ interface HeaderProps {
 
 const Header = ({ selectedRange, onRangeChange }: HeaderProps) => {
   return (
-    <header className='p-4 shadow-md'>
+    <header className='p-4 border-b border-gray-200'>
       <nav className='flex justify-between w-2/3 mx-auto'>
         <p className='text-2xl font-bold'>SupplySight</p>
         <div className='flex items-center gap-1'>
