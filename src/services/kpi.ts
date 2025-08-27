@@ -13,6 +13,13 @@ export interface Product {
   demand: number;
 }
 
+export interface Warehouse {
+  code: string;
+  name: string;
+  city: string;
+  country: string;
+}
+
 export const fetchKPIs = async (range: string): Promise<KPIData[]> => {
   const response = await fetch('/graphql', {
     method: 'POST',
@@ -71,4 +78,33 @@ export const fetchProducts = async (): Promise<Product[]> => {
   }
   
   throw new Error('Failed to fetch products data');
+};
+
+export const fetchWarehouses = async (): Promise<Warehouse[]> => {
+  const response = await fetch('/graphql', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      query: `
+        query GetWarehouses {
+          warehouses {
+            code
+            name
+            city
+            country
+          }
+        }
+      `,
+    }),
+  });
+
+  const result = await response.json();
+  
+  if (result.data?.warehouses) {
+    return result.data.warehouses;
+  }
+  
+  throw new Error('Failed to fetch warehouses data');
 };
