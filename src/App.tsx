@@ -19,15 +19,15 @@ function App() {
           <div className='flex items-center gap-4 mb-6'>
             <KpiCard
               title="Total Stock"
-              value={kpisLoading ? 0 : kpis.totalStock}
+              value={kpisLoading ? `0` : kpis.totalStock.toString()}
             />
             <KpiCard
               title="Total Demand"
-              value={kpisLoading ? 0 : kpis.totalDemand}
+              value={kpisLoading ? `0` : kpis.totalDemand.toString()}
             />
             <KpiCard
               title="Fill Rate"
-              value={kpisLoading ? 0 : Math.round(kpis.fillRate * 100) / 100}
+              value={kpisLoading ? `0%` : Math.round(kpis.fillRate * 100) / 100 + '%'}
             />
           </div>
           

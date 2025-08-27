@@ -2,7 +2,7 @@ import React from 'react';
 
 interface IKpiCardProps {
   title: string;
-  value: number
+  value: string;
 }
 
 const KpiCard: React.FC<IKpiCardProps> = ({ title, value }) => {
