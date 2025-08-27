@@ -23,7 +23,7 @@ export default defineConfig({
         await apolloServer.start()
         apolloServer.applyMiddleware({ app, path: '/graphql' })
         
-        server.middlewares.use('/graphql', app)
+        server.middlewares.use(app)
       }
     }
   ],
