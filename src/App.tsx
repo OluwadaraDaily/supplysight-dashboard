@@ -2,6 +2,7 @@ import './App.css'
 import KpiCard from './components/kpi-card'
 import StockDemandChart from './components/stock-demand-chart'
 import Header from './components/header'
+import Sidebar from './components/sidebar'
 import { useDashboardKPIs } from './hooks/useDashboardKPIs'
 import { useState } from 'react'
 
@@ -12,9 +13,9 @@ function App() {
   return (
     <>
       <Header selectedRange={selectedRange} onRangeChange={setSelectedRange} />
-      <div className='flex gap-4 h-full pt-8'>
-        <aside className='max-w-[300px] w-[300px] h-full border border-red-500'></aside>
-        <main className='w-full px-4'>
+      <div className='flex gap-4 h-full'>
+        <Sidebar />
+        <main className='w-full px-4 pt-8'>
           <div className='flex items-center gap-4 mb-6'>
             <KpiCard
               title="Total Stock"
