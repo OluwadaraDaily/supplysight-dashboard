@@ -97,7 +97,7 @@ const ProductsTable = () => {
     queryFn: fetchWarehouses,
   });
 
-  const { data: rawProducts, isLoading: productsLoading } = useQuery({
+  const { data: rawProducts, isLoading: productsLoading, error } = useQuery({
     queryKey: ['products'],
     queryFn: fetchProducts,
   });
@@ -253,15 +253,38 @@ const ProductsTable = () => {
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
             {productsLoading ? (
+              Array.from({ length: 5 }).map((_, index) => (
+                <tr key={index} className="animate-pulse">
+                  {columns.map((_, colIndex) => (
+                    <td key={colIndex} className="px-6 py-4 whitespace-nowrap">
+                      <div className="h-4 bg-gray-200 rounded w-full max-w-[120px]"></div>
+                    </td>
+                  ))}
+                </tr>
+              ))
+            ) : error ? (
               <tr>
-                <td colSpan={columns.length} className="px-6 py-12 text-center text-gray-500">
-                  Loading products...
+                <td colSpan={columns.length} className="px-6 py-12 text-center">
+                  <div className="flex flex-col items-center gap-3">
+                    <div className="text-red-600 text-lg">⚠️ Error Loading Products</div>
+                    <p className="text-gray-600">Failed to load product data. Please try again.</p>
+                    <button
+                      onClick={() => window.location.reload()}
+                      className="text-blue-600 hover:text-blue-700 font-medium"
+                    >
+                      Refresh Page
+                    </button>
+                  </div>
                 </td>
               </tr>
             ) : table.getRowModel().rows.length === 0 ? (
               <tr>
-                <td colSpan={columns.length} className="px-6 py-12 text-center text-gray-500">
-                  No products found
+                <td colSpan={columns.length} className="px-6 py-12 text-center">
+                  <div className="flex flex-col items-center gap-2">
+                    <div className="text-gray-400 text-4xl">📦</div>
+                    <p className="text-gray-600 font-medium">No products found</p>
+                    <p className="text-gray-500 text-sm">Try adjusting your filters</p>
+                  </div>
                 </td>
               </tr>
             ) : (

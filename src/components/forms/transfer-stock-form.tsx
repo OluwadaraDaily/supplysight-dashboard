@@ -27,6 +27,9 @@ const TransferStockForm = ({ product, onSuccess }: TransferStockFormProps) => {
       setTransferTo('');
       onSuccess?.();
     },
+    onError: (error) => {
+      console.error('Failed to transfer stock:', error);
+    },
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -84,6 +87,14 @@ const TransferStockForm = ({ product, onSuccess }: TransferStockFormProps) => {
             placeholder="Enter quantity"
           />
         </div>
+        
+        {transferStockMutation.error && (
+          <div className="p-3 bg-red-50 border border-red-200 rounded-md">
+            <p className="text-red-700 text-sm">
+              Failed to transfer stock. Please try again.
+            </p>
+          </div>
+        )}
         
         <button
           type="submit"

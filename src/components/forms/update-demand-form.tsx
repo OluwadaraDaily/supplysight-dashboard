@@ -20,6 +20,9 @@ const UpdateDemandForm = ({ product, onSuccess }: UpdateDemandFormProps) => {
       setDemandValue('');
       onSuccess?.();
     },
+    onError: (error) => {
+      console.error('Failed to update demand:', error);
+    },
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -52,6 +55,14 @@ const UpdateDemandForm = ({ product, onSuccess }: UpdateDemandFormProps) => {
             placeholder="Enter new demand"
           />
         </div>
+        
+        {updateDemandMutation.error && (
+          <div className="p-3 bg-red-50 border border-red-200 rounded-md">
+            <p className="text-red-700 text-sm">
+              Failed to update demand. Please try again.
+            </p>
+          </div>
+        )}
         
         <button
           type="submit"
