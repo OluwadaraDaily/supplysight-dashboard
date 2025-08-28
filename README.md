@@ -1,69 +1,147 @@
-# React + TypeScript + Vite
+# SupplySight Dashboard
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A comprehensive supply chain management dashboard built with React, TypeScript, and modern web technologies. Monitor inventory levels, track demand, and manage stock transfers across multiple warehouses in real-time.
 
-Currently, two official plugins are available:
+## 🚀 Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### 📊 Dashboard Overview
+- **Real-time KPI Cards**: Total Stock, Total Demand, and Fill Rate calculations
+- **Interactive Charts**: Stock vs Demand trend visualization with date range selection
+- **Responsive Design**: Works seamlessly on desktop and mobile devices
 
-## Expanding the ESLint configuration
+### 📦 Product Management
+- **Advanced Filtering**: Search by name, SKU, or ID with warehouse and status filters
+- **Interactive Table**: Click any product row to view detailed information
+- **Status Indicators**: Visual health status (🟢 Healthy, 🟡 Low, 🔴 Critical)
+- **Pagination**: Efficient browsing with 10 items per page
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### 🔄 Inventory Operations
+- **Update Demand**: Modify product demand requirements
+- **Transfer Stock**: Move inventory between warehouses
+- **Real-time Updates**: Automatic data refresh after operations
+- **Form Validation**: Comprehensive input validation and error handling
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+### 🎨 Modern UI/UX
+- **Responsive Drawer**: Mobile-friendly side panel for product details
+- **Loading States**: Skeleton loading and smooth transitions
+- **Status Pills**: Color-coded status indicators with tinted rows for critical items
+- **Clean Design**: Modern interface with Tailwind CSS styling
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+## 🛠️ Tech Stack
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### Frontend
+- **React 19** - Modern React with latest features
+- **TypeScript** - Type-safe development
+- **Vite** - Fast build tool and dev server
+- **Tailwind CSS** - Utility-first CSS framework
+
+### Data & State Management
+- **TanStack Query** - Server state management with caching
+- **TanStack Table** - Powerful table with filtering and pagination
+- **GraphQL** - Efficient data fetching with Apollo Server
+
+### Visualization
+- **Recharts** - Beautiful, responsive charts
+- **Lucide React** - Modern icon library
+
+### Development Tools
+- **ESLint** - Code linting and formatting
+- **TypeScript** - Static type checking
+
+## 🚦 Getting Started
+
+### Prerequisites
+- Node.js 18+ 
+- npm or yarn
+
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd supplysight-dashboard
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Start the development server**
+   ```bash
+   npm run dev
+   ```
+
+4. **Open your browser**
+   Navigate to `http://localhost:5173`
+
+### Available Scripts
+
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run lint` - Run ESLint
+- `npm run preview` - Preview production build
+
+## 🏗️ Project Structure
+
+```
+src/
+├── components/          # Reusable UI components
+│   ├── ui/             # Base UI components (drawer, etc.)
+│   ├── forms/          # Form components
+│   └── ...             # Feature components
+├── hooks/              # Custom React hooks
+├── services/           # API services and data fetching
+├── lib/                # Utility functions
+└── graphql/            # GraphQL schema and resolvers
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 🔧 Key Components
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### Data Flow
+- **GraphQL API**: Centralized data management with mock data
+- **React Query**: Caching, background updates, and optimistic updates
+- **Form Management**: Self-contained form components with validation
 
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### Features Implementation
+- **Filtering**: TanStack Table's built-in filtering system
+- **Mutations**: GraphQL mutations with automatic cache invalidation
+- **Real-time UI**: Optimistic updates and loading states
+
+## 🎯 Business Logic
+
+### Fill Rate Calculation
 ```
+Fill Rate = (sum(min(stock, demand)) / sum(demand)) * 100%
+```
+
+### Status Rules
+- **🟢 Healthy**: Stock > Demand
+- **🟡 Low**: Stock = Demand  
+- **🔴 Critical**: Stock < Demand (with visual row highlighting)
+
+## 🚀 Future Enhancements
+
+- [ ] User authentication and role-based access
+- [ ] Real database integration (PostgreSQL/MongoDB)
+- [ ] Advanced analytics and reporting
+- [ ] Email notifications for critical stock levels
+- [ ] Bulk operations and CSV import/export
+- [ ] Multi-language support
+- [ ] Dark mode theme
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📝 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+Built with ❤️ using modern web technologies for efficient supply chain management.
