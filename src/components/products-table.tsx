@@ -12,6 +12,7 @@ import {
 } from '@tanstack/react-table';
 import { fetchWarehouses, fetchProducts } from '../services/kpi';
 import { type FiltersState } from './filters-row';
+import ProductDrawer from './product-drawer';
 
 type ProductStatus = 'healthy' | 'low' | 'critical';
 
@@ -88,6 +89,8 @@ const ProductsTable = () => {
   });
 
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [selectedProduct, setSelectedProduct] = useState<ProductWithStatus | null>(null);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   const { data: warehouses, isLoading: warehousesLoading } = useQuery({
     queryKey: ['warehouses'],
@@ -165,6 +168,16 @@ const ProductsTable = () => {
     { value: 'low', label: 'Low' },
     { value: 'critical', label: 'Critical' },
   ];
+
+  const handleRowClick = (product: ProductWithStatus) => {
+    setSelectedProduct(product);
+    setIsDrawerOpen(true);
+  };
+
+  const handleDrawerClose = () => {
+    setIsDrawerOpen(false);
+    setSelectedProduct(null);
+  };
 
   return (
     <div className="bg-white rounded-lg shadow-sm">
@@ -255,7 +268,8 @@ const ProductsTable = () => {
               table.getRowModel().rows.map((row) => (
                 <tr
                   key={row.id}
-                  className={`hover:bg-gray-50 ${
+                  onClick={() => handleRowClick(row.original)}
+                  className={`cursor-pointer hover:bg-gray-50 ${
                     row.original.status === 'critical' ? 'bg-red-50' : ''
                   }`}
                 >
@@ -301,6 +315,12 @@ const ProductsTable = () => {
           </button>
         </div>
       </div>
+
+      <ProductDrawer
+        product={selectedProduct}
+        isOpen={isDrawerOpen}
+        onClose={handleDrawerClose}
+      />
     </div>
   );
 };
