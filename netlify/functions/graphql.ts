@@ -1,7 +1,7 @@
-import { ApolloServer } from 'apollo-server-lambda';
-import { makeExecutableSchema } from '@graphql-tools/schema';
+import { Handler } from '@netlify/functions';
+import { graphql, buildSchema } from 'graphql';
 
-const typeDefs = `
+const schema = buildSchema(`
   type Warehouse {
     code: ID!
     name: String!
@@ -34,7 +34,7 @@ const typeDefs = `
     updateDemand(id: ID!, demand: Int!): Product!
     transferStock(id: ID!, from: String!, to: String!, qty: Int!): Product!
   }
-`;
+`);
 
 const mockWarehouses = [
   { code: "BLR-A", name: "Bangalore Alpha", city: "Bangalore", country: "India" },
@@ -83,69 +83,89 @@ const getProductStatus = (stock: number, demand: number) => {
   return 'critical';
 };
 
-const resolvers = {
-  Query: {
-    products: (_: any, { search, status, warehouse }: { search?: string; status?: string; warehouse?: string }) => {
-      let filtered = [...mockProducts];
-      
-      if (search) {
-        const searchLower = search.toLowerCase();
-        filtered = filtered.filter(p => 
-          p.name.toLowerCase().includes(searchLower) ||
-          p.sku.toLowerCase().includes(searchLower) ||
-          p.id.toLowerCase().includes(searchLower)
-        );
-      }
-      
-      if (warehouse && warehouse !== 'all') {
-        filtered = filtered.filter(p => p.warehouse === warehouse);
-      }
-      
-      if (status && status !== 'all') {
-        filtered = filtered.filter(p => getProductStatus(p.stock, p.demand) === status.toLowerCase());
-      }
-      
-      return filtered;
-    },
+const rootResolver = {
+  products: ({ search, status, warehouse }: { search?: string; status?: string; warehouse?: string }) => {
+    let filtered = [...mockProducts];
     
-    warehouses: () => mockWarehouses,
+    if (search) {
+      const searchLower = search.toLowerCase();
+      filtered = filtered.filter(p => 
+        p.name.toLowerCase().includes(searchLower) ||
+        p.sku.toLowerCase().includes(searchLower) ||
+        p.id.toLowerCase().includes(searchLower)
+      );
+    }
     
-    kpis: (_: any, { range }: { range: string }) => generateKPIData(range),
+    if (warehouse && warehouse !== 'all') {
+      filtered = filtered.filter(p => p.warehouse === warehouse);
+    }
+    
+    if (status && status !== 'all') {
+      filtered = filtered.filter(p => getProductStatus(p.stock, p.demand) === status.toLowerCase());
+    }
+    
+    return filtered;
   },
   
-  Mutation: {
-    updateDemand: (_: any, { id, demand }: { id: string; demand: number }) => {
-      const productIndex = mockProducts.findIndex(p => p.id === id);
-      if (productIndex === -1) throw new Error('Product not found');
-      
-      mockProducts[productIndex].demand = demand;
-      return mockProducts[productIndex];
-    },
+  warehouses: () => mockWarehouses,
+  
+  kpis: ({ range }: { range: string }) => generateKPIData(range),
+  
+  updateDemand: ({ id, demand }: { id: string; demand: number }) => {
+    const productIndex = mockProducts.findIndex(p => p.id === id);
+    if (productIndex === -1) throw new Error('Product not found');
     
-    transferStock: (_: any, { id, from, to, qty }: { id: string; from: string; to: string; qty: number }) => {
-      const productIndex = mockProducts.findIndex(p => p.id === id);
-      if (productIndex === -1) throw new Error('Product not found');
-      
-      const product = mockProducts[productIndex];
-      if (product.warehouse !== from) throw new Error('Product not in source warehouse');
-      if (product.stock < qty) throw new Error('Insufficient stock');
-      
-      product.stock -= qty;
-      product.warehouse = to;
-      
-      return product;
-    },
+    mockProducts[productIndex].demand = demand;
+    return mockProducts[productIndex];
+  },
+  
+  transferStock: ({ id, from, to, qty }: { id: string; from: string; to: string; qty: number }) => {
+    const productIndex = mockProducts.findIndex(p => p.id === id);
+    if (productIndex === -1) throw new Error('Product not found');
+    
+    const product = mockProducts[productIndex];
+    if (product.warehouse !== from) throw new Error('Product not in source warehouse');
+    if (product.stock < qty) throw new Error('Insufficient stock');
+    
+    product.stock -= qty;
+    product.warehouse = to;
+    
+    return product;
   },
 };
 
-const schema = makeExecutableSchema({
-  typeDefs,
-  resolvers,
-});
+export const handler: Handler = async (event) => {
+  if (event.httpMethod !== 'POST') {
+    return {
+      statusCode: 405,
+      body: JSON.stringify({ error: 'Method Not Allowed' }),
+    };
+  }
 
-const server = new ApolloServer({
-  schema,
-  introspection: true,
-});
+  try {
+    const { query, variables } = JSON.parse(event.body || '{}');
+    
+    const result = await graphql({
+      schema,
+      source: query,
+      rootValue: rootResolver,
+      variableValues: variables,
+    });
 
-export const handler = server.createHandler();
+    return {
+      statusCode: 200,
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': 'Content-Type',
+        'Access-Control-Allow-Methods': 'POST, OPTIONS',
+      },
+      body: JSON.stringify(result),
+    };
+  } catch (error) {
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ error: 'Internal Server Error' }),
+    };
+  }
+};
