@@ -19,7 +19,7 @@ function App() {
       <Header selectedRange={selectedRange} onRangeChange={setSelectedRange} />
       <div className='flex gap-4 h-full'>
         <Sidebar />
-        <main className='w-full px-4 pt-8'>
+        <main className='w-full px-4 pt-8 overflow-auto'>
           <div className='flex items-center gap-4 mb-6'>
             {kpisLoading ? (
               <>
